@@ -1,0 +1,1 @@
+Adfomrt Report Extractor Single Metric

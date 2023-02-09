@@ -1,0 +1,1 @@
+Adform Report Extractor Single Metric
