@@ -162,7 +162,6 @@ def get_date_period_converted(period_from: str, period_to: str) -> Tuple[datetim
     day_diff = (end_date_form - start_date_form).days
     if day_diff < 0:
         raise UserException("start_date cannot exceed end_date.")
-
     return start_date_form, end_date_form
 
 
