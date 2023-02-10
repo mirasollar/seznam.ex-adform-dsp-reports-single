@@ -131,7 +131,7 @@ class AdformClient(HttpClient):
             logging.debug(f"operation_id  : {operation_id}")
             self._wait_until_operation_finished(operation_id)
             res = self._get_report_result(report_location_id)
-            if len(res.get('reportData')['rows']) > 0:
+            if len(res.get('reportData')['rows']) > DEFAULT_PAGING_LIMIT:
                 offset = len(res.get('reportData')['rows']) + offset
             else:
                 has_more = False
