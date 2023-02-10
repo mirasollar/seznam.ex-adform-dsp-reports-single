@@ -71,6 +71,7 @@ class AdformClient(HttpClient):
         logging.debug(f"submit response : {response}")
         operation_id = str(response.headers['Operation-Location'].rsplit('/', 1)[1])
         report_location_id = str(response.headers['Location'].rsplit('/', 1)[1])
+        print(f"Report location ID: {report_location_id}")
         return operation_id, report_location_id
 
     def _wait_until_operation_finished(self, operation_id: str) -> Dict:
@@ -83,6 +84,8 @@ class AdformClient(HttpClient):
             req_url = "".join([self.base_url, END_BUYER_STATS_OPERATION, operation_id])
             res: Dict = self.get(req_url)  # noqa
             logging.debug(req_url)
+            print(f"Result: {res}")
+            print(f"Result status: {res['status']})
             if "status" not in res:
                 invalid_status = True
             elif res['status'] in ['succeeded', 'failed']:
