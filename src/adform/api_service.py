@@ -85,7 +85,7 @@ class AdformClient(HttpClient):
             res: Dict = self.get(req_url)  # noqa
             logging.debug(req_url)
             print(f"Result: {res}")
-            print(f"Result status: {res['status']})
+            print(f"Result status: {res['status']}")
             if "status" not in res:
                 invalid_status = True
             elif res['status'] in ['succeeded', 'failed']:
