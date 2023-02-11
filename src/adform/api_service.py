@@ -15,7 +15,7 @@ DEFAULT_PAGING_LIMIT = 100000
 MAX_RETRIES = 10
 
 # wait between polls (s)
-DEFAULT_WAIT_INTERVAL = 60
+DEFAULT_WAIT_INTERVAL = 2
 
 
 class AdformClientError(Exception):
@@ -69,9 +69,9 @@ class AdformClient(HttpClient):
             raise AdformClientError(
                 f"Failed to submit report. Operation failed with code {response.status_code}. Reason: {response.text}")
         logging.debug(f"submit response : {response}")
+        print(f"response: {response}")
         operation_id = str(response.headers['Operation-Location'].rsplit('/', 1)[1])
         report_location_id = str(response.headers['Location'].rsplit('/', 1)[1])
-        print(f"Report location ID: {report_location_id}")
         return operation_id, report_location_id
 
     def _wait_until_operation_finished(self, operation_id: str) -> Dict:
