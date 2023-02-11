@@ -69,7 +69,7 @@ class AdformClient(HttpClient):
             raise AdformClientError(
                 f"Failed to submit report. Operation failed with code {response.status_code}. Reason: {response.text}")
         logging.debug(f"submit response : {response}")
-        print(f"response: {response}")
+        print(f"Response header: {response.headers}")
         operation_id = str(response.headers['Operation-Location'].rsplit('/', 1)[1])
         report_location_id = str(response.headers['Location'].rsplit('/', 1)[1])
         return operation_id, report_location_id
