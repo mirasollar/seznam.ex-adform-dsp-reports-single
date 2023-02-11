@@ -133,7 +133,6 @@ class AdformClient(HttpClient):
             res = self._get_report_result(report_location_id)
             if len(res.get('reportData')['rows']) <= DEFAULT_PAGING_LIMIT:
                 has_more = False
-            yield res
             else:
                 while has_more:
                     paging = {"offset": offset, "limit": DEFAULT_PAGING_LIMIT}
@@ -149,3 +148,4 @@ class AdformClient(HttpClient):
                     else:
                         has_more = False
                     yield res
+            yield res
