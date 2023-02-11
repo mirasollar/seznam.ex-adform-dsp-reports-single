@@ -69,7 +69,6 @@ class AdformClient(HttpClient):
             raise AdformClientError(
                 f"Failed to submit report. Operation failed with code {response.status_code}. Reason: {response.text}")
         logging.debug(f"submit response : {response}")
-        print(f"Response header: {response.headers}")
         operation_id = str(response.headers['Operation-Location'].rsplit('/', 1)[1])
         report_location_id = str(response.headers['Location'].rsplit('/', 1)[1])
         return operation_id, report_location_id
@@ -84,8 +83,6 @@ class AdformClient(HttpClient):
             req_url = "".join([self.base_url, END_BUYER_STATS_OPERATION, operation_id])
             res: Dict = self.get(req_url)  # noqa
             logging.debug(req_url)
-            print(f"Result: {res}")
-            print(f"Result status: {res['status']}")
             if "status" not in res:
                 invalid_status = True
             elif res['status'] in ['succeeded', 'failed']:
@@ -123,9 +120,16 @@ class AdformClient(HttpClient):
             res : generator - paginated results
 
         """
-        paging = {"limit": 0}
-        operation_id, report_location_id = self._submit_stats_report(request_filter, dimensions, metrics, paging)
-        logging.debug(f"operation_id  : {operation_id}")
-        self._wait_until_operation_finished(operation_id)
-        res = self._get_report_result(report_location_id)
-        yield res
+        has_more = True
+        offset = 0
+        while has_more:
+            paging = {"offset": offset, "limit": DEFAULT_PAGING_LIMIT}
+            operation_id, report_location_id = self._submit_stats_report(request_filter, dimensions, metrics, paging)
+            logging.debug(f"operation_id  : {operation_id}")
+            self._wait_until_operation_finished(operation_id)
+            res = self._get_report_result(report_location_id)
+            if len(res.get('reportData')['rows']) > 0:
+                offset = len(res.get('reportData')['rows']) + offset
+            else:
+                has_more = False
+            yield res
