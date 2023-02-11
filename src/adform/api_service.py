@@ -131,8 +131,9 @@ class AdformClient(HttpClient):
             logging.debug(f"operation_id  : {operation_id}")
             self._wait_until_operation_finished(operation_id)
             res = self._get_report_result(report_location_id)
-            if len(res.get('reportData')['rows']) < DEFAULT_PAGING_LIMIT:
+            if len(res.get('reportData')['rows']) <= DEFAULT_PAGING_LIMIT:
                 has_more = False
+                yield res
             else:
                 paging = {"offset": offset, "limit": DEFAULT_PAGING_LIMIT}
                 operation_id, report_location_id = self._submit_stats_report(request_filter,
@@ -141,10 +142,9 @@ class AdformClient(HttpClient):
                                                                              paging)
                 logging.debug(f"operation_id  : {operation_id}")
                 self._wait_until_operation_finished(operation_id)
-                pagi_res = self._get_report_result(report_location_id)
-                if len(pagi_res.get('reportData')['rows']) > 0:
-                    offset = len(pagi_res.get('reportData')['rows']) + offset
+                res = self._get_report_result(report_location_id)
+                if len(res.get('reportData')['rows']) > 0:
+                    offset = len(res.get('reportData')['rows']) + offset
                 else:
                     has_more = False
-                yield pagi_res
-            yield res
+                yield res
