@@ -11,7 +11,7 @@ LOGIN_URL = 'https://id.adform.com/sts/connect/token'
 END_BUYER_STATS = 'v1/buyer/stats/data'
 END_BUYER_STATS_OPERATION = "v1/buyer/stats/operations/"
 
-DEFAULT_PAGING_LIMIT = 100000
+DEFAULT_PAGING_LIMIT = 3000
 MAX_RETRIES = 10
 
 # wait between polls (s)
