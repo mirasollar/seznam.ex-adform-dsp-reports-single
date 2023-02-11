@@ -146,4 +146,6 @@ class AdformClient(HttpClient):
                     offset = len(res.get('reportData')['rows']) + offset
                 else:
                     has_more = False
+                yield res
+                break
             yield res
