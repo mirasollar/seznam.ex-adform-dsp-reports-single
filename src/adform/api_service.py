@@ -11,7 +11,7 @@ LOGIN_URL = 'https://id.adform.com/sts/connect/token'
 END_BUYER_STATS = 'v1/buyer/stats/data'
 END_BUYER_STATS_OPERATION = "v1/buyer/stats/operations/"
 
-DEFAULT_PAGING_LIMIT = 200
+# DEFAULT_PAGING_LIMIT = 200
 MAX_RETRIES = 10
 
 # wait between polls (s)
@@ -55,7 +55,7 @@ class AdformClient(HttpClient):
                              request_filter: Dict,
                              dimensions: List,
                              metrics: List[Dict],
-                             paging: Optional[Dict] = None) -> Tuple[str, str]:
+                             paging: Optional[Dict] = None) -> Tuple[str]:
         body = dict(dimensions=dimensions, filter=request_filter, metrics=metrics)
         if paging:
             body['paging'] = paging
@@ -106,30 +106,9 @@ class AdformClient(HttpClient):
                                   request_filter: Dict,
                                   dimensions: List,
                                   metrics: List[Dict]) -> Generator:
-        """
-        Args:
-            request_filter: Dict containing date range and client ids
-                            e.g { "date": {"from": "2019-12-11T08:38:24.6963524Z","to": "2019-12-11T08:38:24.6963524Z"},
-                                 "client": {"id": [12, 13, 14]}}
-            dimensions: List containing valid dimensions
-                        e.g. ["date","client","campaign"]
-            metrics: List of Dicts containing valid metrics and their specs.
-                     e.g.  [{"metric": "impressions","specs": {"adUniqueness": "campaignUnique"}}]
-
-        Returns:
-            res : generator - paginated results
-
-        """
-        has_more = True
-        offset = 0
-        while has_more:
-            paging = {"offset": offset, "limit": DEFAULT_PAGING_LIMIT}
-            operation_id, report_location_id = self._submit_stats_report(request_filter, dimensions, metrics, paging)
-            logging.debug(f"operation_id  : {operation_id}")
-            self._wait_until_operation_finished(operation_id)
-            res = self._get_report_result(report_location_id)
-            if len(res.get('reportData')['rows']) > 0:
-                offset = len(res.get('reportData')['rows']) + offset
-            else:
-                has_more = False
-            yield res
+        paging = {"limit": 0}
+        operation_id, report_location_id = self._submit_stats_report(request_filter, dimensions, metrics, paging)
+        logging.debug(f"operation_id  : {operation_id}")
+        self._wait_until_operation_finished(operation_id)
+        res = self._get_report_result(report_location_id)
+        yield res
