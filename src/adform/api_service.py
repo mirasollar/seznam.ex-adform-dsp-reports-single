@@ -11,7 +11,6 @@ LOGIN_URL = 'https://id.adform.com/sts/connect/token'
 END_BUYER_STATS = 'v1/buyer/stats/data'
 END_BUYER_STATS_OPERATION = "v1/buyer/stats/operations/"
 
-# DEFAULT_PAGING_LIMIT = 200
 MAX_RETRIES = 10
 
 # wait between polls (s)
@@ -55,10 +54,8 @@ class AdformClient(HttpClient):
                              request_filter: Dict,
                              dimensions: List,
                              metrics: List[Dict],
-                             paging: Optional[Dict] = None) -> Tuple[str]:
-        body = dict(dimensions=dimensions, filter=request_filter, metrics=metrics)
-        if paging:
-            body['paging'] = paging
+                             paging: [Dict]):
+        body = dict(dimensions=dimensions, filter=request_filter, metrics=metrics, paging={"limit": 0})
         try:
             response = self.post_raw(endpoint_path=END_BUYER_STATS, json=body)
         except RetryError as e:
@@ -102,11 +99,10 @@ class AdformClient(HttpClient):
         endpoint = '/'.join([END_BUYER_STATS, location_id])
         return self.get(endpoint)  # noqa
 
-    def get_report_data_paginated(self,
-                                  request_filter: Dict,
-                                  dimensions: List,
-                                  metrics: List[Dict]) -> Generator:
-        paging = {"limit": 0}
+    def get_report_data(self,
+                          request_filter: Dict,
+                          dimensions: List,
+                          metrics: List[Dict]) -> Generator:
         operation_id, report_location_id = self._submit_stats_report(request_filter, dimensions, metrics, paging)
         logging.debug(f"operation_id  : {operation_id}")
         self._wait_until_operation_finished(operation_id)
