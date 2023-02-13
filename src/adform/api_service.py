@@ -1,6 +1,6 @@
 import time
 import logging
-from typing import Dict, List, Optional, Tuple, Generator
+from typing import Dict, List, Generator
 from keboola.http_client import HttpClient
 from requests.exceptions import RetryError
 
@@ -100,10 +100,10 @@ class AdformClient(HttpClient):
         return self.get(endpoint)  # noqa
 
     def get_report_data(self,
-                          request_filter: Dict,
-                          dimensions: List,
-                          metrics: List[Dict]) -> Generator:
-        operation_id, report_location_id = self._submit_stats_report(request_filter, dimensions, metrics, paging)
+                        request_filter: Dict,
+                        dimensions: List,
+                        metrics: List[Dict]) -> Generator:
+        operation_id, report_location_id = self._submit_stats_report(request_filter, dimensions, metrics)
         logging.debug(f"operation_id  : {operation_id}")
         self._wait_until_operation_finished(operation_id)
         res = self._get_report_result(report_location_id)
