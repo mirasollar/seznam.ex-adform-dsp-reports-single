@@ -53,8 +53,7 @@ class AdformClient(HttpClient):
     def _submit_stats_report(self,
                              request_filter: Dict,
                              dimensions: List,
-                             metrics: List[Dict],
-                             paging: [Dict]):
+                             metrics: List[Dict]):
         body = dict(dimensions=dimensions, filter=request_filter, metrics=metrics, paging={"limit": 0})
         try:
             response = self.post_raw(endpoint_path=END_BUYER_STATS, json=body)
